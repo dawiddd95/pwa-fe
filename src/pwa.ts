@@ -3,28 +3,44 @@ import { db } from './db';
 // Importujemy axios do wysyłki danych na backend
 import axios from 'axios';
 
+// Flaga lokalna chroniąca przed wielokrotnym sync
+let isSyncing = false;
+
 // Główna funkcja do synchronizacji lokalnych leadów z backendem
 export async function syncLeads() {
-  // Pobieramy wszystkie leady oznaczone jako niesynchronizowane
-  const unsynced = await db.leads.where('synced').equals(0).toArray();
+  if (isSyncing) return;
+  isSyncing = true;
 
-  // Iterujemy po nich i próbujemy je wysłać do backendu
-  for (const lead of unsynced) {
-    try {
-      // Wysyłamy dane leada do backendu
-      await axios.post('https://b66e-85-237-177-211.ngrok-free.app/api/leads', {
-        name: lead.name,
-        email: lead.email
-      });
+  try {
+    // Pobieramy tylko leady z synced: -1 lub 0 (niezsynchronizowane)
+    const unsynced = await db.leads.where('synced').anyOf([0, -1]).toArray();
 
-      // Oznaczamy rekord jako zsynchronizowany (synced = 1)
-      await db.leads.update(lead.id!, { synced: 1 });
+    // Iterujemy po nich i próbujemy je wysłać do backendu
+    for (const lead of unsynced) {
+      try {
+        // Oznaczamy jako "w trakcie synchronizacji"
+        await db.leads.update(lead.id!, { synced: -1 });
 
-    } catch (err) {
-      // Jeśli nie działa – zostawiamy w bazie i kończymy próbę
-      console.warn('Synchronizacja nie powiodła się, spróbuję później.');
-    }
+        // Wysyłamy dane leada do backendu
+        await axios.post('https://b66e-85-237-177-211.ngrok-free.app/api/leads', {
+          name: lead.name,
+          email: lead.email
+        });
+
+        // Oznaczamy rekord jako zsynchronizowany (synced = 1)
+        await db.leads.update(lead.id!, { synced: 1 });
+        console.log(`✅ Zsynchronizowano: ${lead.name}`);
+      } catch (err) {
+        // Jeśli nie działa – zostawiamy w bazie i kończymy próbę
+        console.warn('Synchronizacja nie powiodła się, spróbuję później.');
+        await db.leads.update(lead.id!, { synced: 0 });
+      }
+    } 
+  } catch(err) {
+    console.error('❌ Sync globalny się wywalił:', err);
   }
+
+  isSyncing = false;
 }
 
 // Automatyczne wywołanie synchronizacji po odzyskaniu internetu
