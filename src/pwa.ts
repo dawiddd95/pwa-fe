@@ -12,7 +12,7 @@ export async function syncLeads() {
   for (const lead of unsynced) {
     try {
       // Wysyłamy dane leada do backendu
-      await axios.post('http://localhost:3000/api/leads', {
+      await axios.post('https://675d-85-237-177-211.ngrok-free.app/api/leads', {
         name: lead.name,
         email: lead.email
       });
