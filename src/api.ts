@@ -15,7 +15,7 @@ export async function sendLead(name: string, email: string) {
     await db.leads.add({
       name,
       email,
-      synced: 0 // 0 = niezsynchronizowane
+      synced: -1 // -1 = w trakcie synchronizowania
     } as Lead);
   }
 }
