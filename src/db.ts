@@ -6,7 +6,7 @@ export interface Lead {
   id?: number;         // Klucz główny (automatyczny ++id)
   name: string;        // Imię osoby zapisanej
   email: string;       // Adres e-mail
-  synced: 0 | 1;       // 0 = lokalnie zapisane, 1 = zsynchronizowane z backendem
+  synced: 0 | 1 | -1;       // 0 = lokalnie zapisane, 1 = zsynchronizowane z backendem, -1 = jest synchronizowany
 }
 
 // Tworzymy klasę bazy danych, rozszerzając Dexie

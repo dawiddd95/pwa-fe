@@ -1,35 +1,25 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { sendLead } from '../api';
-import { db } from '../db'; // importujemy bazę IndexedDB
 
 export default function Home() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await sendLead(name, email);
-  };
-
-  // 🔍 Przyciskiem wypisujemy całą lokalną bazę
-  const showIndexedDB = async () => {
-    const allLeads = await db.leads.toArray();
-    console.log('📦 Zawartość IndexedDB:', allLeads);
-    alert(`Znaleziono ${allLeads.length} leadów. Sprawdź konsolę!`);
+    navigate('/thank-you');
   };
 
   return (
-    <>
-      <h1> Wersja 2</h1>
-      <form onSubmit={handleSubmit}>
-        <h1>Zapisz się</h1>
-        <input value={name} onChange={e => setName(e.target.value)} placeholder='Imię' />
-        <input value={email} onChange={e => setEmail(e.target.value)} placeholder='Email' type='email' />
-        <button type='submit'>Wyślij</button>
-      </form>
-
-      {/* 🔘 Przycisk do debugowania IndexedDB */}
-      <button onClick={showIndexedDB}>🔍 Pokaż IndexedDB</button>
-    </>
+    <form onSubmit={handleSubmit}>
+      <h1>Wersja 3</h1>
+      <h1>Zapisz się</h1>
+      <input value={name} onChange={e => setName(e.target.value)} placeholder='Imię' />
+      <input value={email} onChange={e => setEmail(e.target.value)} placeholder='Email' type='email' />
+      <button type='submit'>Wyślij</button>
+    </form>
   );
 }
