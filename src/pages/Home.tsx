@@ -20,6 +20,7 @@ export default function Home() {
 
   return (
     <>
+      <h1> Wersja 2</h1>
       <form onSubmit={handleSubmit}>
         <h1>Zapisz się</h1>
         <input value={name} onChange={e => setName(e.target.value)} placeholder='Imię' />
