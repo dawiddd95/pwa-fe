@@ -7,7 +7,7 @@ import { db, Lead } from './db';
 export async function sendLead(name: string, email: string) {
   try {
     // Próbujemy wysłać lead na backend (gdy jesteśmy online)
-    await axios.post('https://e135-85-237-177-211.ngrok-free.app/api/leads', { name, email });
+    await axios.post('https://675d-85-237-177-211.ngrok-free.app/api/leads', { name, email });
   } catch (error) {
     // Jeśli nie mamy internetu lub API nie działa – zapisujemy lokalnie
     console.warn('Offline lub backend niedostępny. Zapisuję lokalnie.');
