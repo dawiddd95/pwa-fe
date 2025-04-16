@@ -22,7 +22,7 @@ export async function syncLeads() {
         await db.leads.update(lead.id!, { synced: -1 });
 
         // Wysyłamy dane leada do backendu
-        await axios.post('https://b66e-85-237-177-211.ngrok-free.app/api/leads', {
+        await axios.post('https://0594-85-237-177-211.ngrok-free.app/api/leads', {
           name: lead.name,
           email: lead.email
         });
